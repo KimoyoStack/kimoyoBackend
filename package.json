@@ -1,0 +1,27 @@
+{
+  "name": "kimoyobackend",
+  "version": "1.0.0",
+  "description": "cool mec",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev-start":"nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KimoyoStack/kimoyoBackend.git"
+  },
+  "author": "a",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KimoyoStack/kimoyoBackend/issues"
+  },
+  "homepage": "https://github.com/KimoyoStack/kimoyoBackend#readme",
+  "dependencies": {
+    "@prisma/client": "^3.7.0",
+    "express": "^4.17.2",
+    "prisma": "^3.7.0"
+  },
+  "type": "module"
+}

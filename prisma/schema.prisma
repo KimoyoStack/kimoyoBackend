@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["mongoDb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model compteUtilisateur{
+  id       String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  numero   String @unique
+  password String 
+  utilisateur utilisateur?
+}
+
+model utilisateur{
+  id       String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  NomUtilisateur String
+  prenomsUtilisateur String 
+  compte  compteUtilisateur @relation(fields: [compteId],references: [id])
+  compteId String
+  reservation reservation[]
+  livraisonEnv livraison[]@relation(name: "envoyeurRelation")
+  livraisonrec livraison[]@relation(name: "receveurRelation")
+}
+
+model agent{
+  id       String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  Nom  String
+  prenoms String
+  agence agence @relation(fields: [agenceId],references: [id])
+  agenceId String
+  role Role
+  livraisonEnv livraison[] @relation(name: "agentQuiEnv")
+  livraisonRec livraison[] @relation(name: "agentQuiRec")
+}
+
+enum Role{
+   DIRECTEUR
+   SECRETAIRE
+   PORTEUR
+}
+
+model reservation{
+  id       String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  codeQR  String
+  utilisateur utilisateur @relation(fields: [utilisateurId],references: [id])
+  utilisateurId String  
+  voyage voyage @relation(fields: [voyageId],references: [id])
+  voyageId String
+}
+
+model voyage{
+  id       String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  villeDepart  ville  @relation(fields: [villeDepartId],references: [id],name: "villeDepart")
+  villeDepartId String
+  villeArriver ville @relation(fields: [villeArriverId],references: [id],name: "villeArriver")
+  villeArriverId String
+  heureDepart DateTime
+  reservation reservation[]
+  compagnie compagnie @relation(fields: [compagnieId],references: [id])
+  compagnieId String
+}
+
+model compagnie{
+  id       String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  telCompagnie String
+  voyage voyage[]
+  Agence agence[]
+}
+
+model agence{
+  id       String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  nomAgence String
+  agence agent[]
+  ville ville @relation(fields: [villeId],references: [id])
+  villeId String
+  compagnie compagnie @relation(fields: [compagnieId],references: [id]) 
+  compagnieId String
+  livraisonEnv livraison[]@relation(name: "agenceEnvoyeur")
+  livraisonRec livraison[]@relation(name: "agenceReceptrice")
+}
+
+model ville{
+  id       String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  NomVille   String
+  Agence agence[]
+  voyageArriver voyage[] @relation(name: "villeArriver" )
+  voyageDepart voyage[] @relation(name: "villeDepart" )
+}
+
+model livraison{
+  id       String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  agenceEnvoyeur agence @relation(fields: [agenceEnvId],references: [id],name: "agenceEnvoyeur")
+  agenceEnvId String
+  
+
+  agenceReceptrice agence @relation(fields: [agenceReceId],references: [id],name: "agenceReceptrice")
+  agenceReceId String
+  
+
+  envoyeur utilisateur @relation(fields: [envoyeurId],references: [id],name: "envoyeurRelation")
+  envoyeurId String
+
+  receveur utilisateur @relation(fields: [receveurId],references: [id],name: "receveurRelation")
+  receveurId String
+
+  agentEnv agent @relation(fields: [agentEnvId],references: [id] ,name: "agentQuiEnv")
+  agentEnvId String
+
+  agentRec agent @relation(fields: [agentRecId],references: [id],name: "agentQuiRec")
+  agentRecId String
+
+  dateEnvoi DateTime
+
+  dateReception DateTime
+
+  status Boolean
+
+  colis colis?
+}
+model colis{
+  id       String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  descriptionColis String
+  livraison livraison @relation(fields: [livraisonId],references: [id])
+  livraisonId String
+}
+
